@@ -9,7 +9,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  .top-div {
+  .page-header {
     width: 100%;
 
     display: flex;
