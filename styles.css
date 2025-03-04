@@ -1,0 +1,38 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .top-div {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .search-bar {
+      max-width: 80%;
+      width: 100%;
+
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+
+      button {
+        /* replace text with magnifying glass icon */
+      }
+    }
+
+    .min-max-temp-div {
+      display: flex;
+      gap: 7px;
+    }
+  }
+}

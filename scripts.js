@@ -39,8 +39,11 @@ async function renderTopDiv() {
   topDiv.classList.add("top-div");
 
   const searchBar = document.createElement("div");
+  searchBar.classList.add("search-bar");
   const input = document.createElement("input");
+
   const button = document.createElement("button");
+  button.textContent = "Search";
 
   searchBar.appendChild(input);
   searchBar.appendChild(button);
@@ -56,16 +59,16 @@ async function renderTopDiv() {
   const minMaxTempDiv = document.createElement("div");
   minMaxTempDiv.classList.add("min-max-temp-div");
 
-  const tempMinDiv = document.createElement("div");
-  tempMinDiv.classList.add("temp-min-div");
-  tempMinDiv.textContent = data.sevenDays[0].tempMin;
-
   const tempMaxDiv = document.createElement("div");
   tempMaxDiv.classList.add("temp-max-div");
-  tempMaxDiv.textContent = data.sevenDays[0].tempMax;
+  tempMaxDiv.textContent = `H: ${data.sevenDays[0].tempMax}`;
 
-  minMaxTempDiv.appendChild(tempMinDiv);
+  const tempMinDiv = document.createElement("div");
+  tempMinDiv.classList.add("temp-min-div");
+  tempMinDiv.textContent = `L: ${data.sevenDays[0].tempMin}`;
+
   minMaxTempDiv.appendChild(tempMaxDiv);
+  minMaxTempDiv.appendChild(tempMinDiv);
 
   topDiv.appendChild(searchBar);
   topDiv.appendChild(locationDiv);
@@ -76,10 +79,3 @@ async function renderTopDiv() {
 }
 
 renderTopDiv();
-
-// Top Div
-// Search Bar
-// Location
-// Current Temp
-// Weather Status
-// H: L: (High and low for day)
