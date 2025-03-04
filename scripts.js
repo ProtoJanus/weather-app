@@ -12,7 +12,7 @@ async function getData() {
 
 async function processData() {
   const weatherDataJSON = await getData();
-  const location = await weatherDataJSON.address;
+  const location = weatherDataJSON.address;
   const days = [];
 
   for (let i = 0; i < 7; i++) {
@@ -21,6 +21,7 @@ async function processData() {
       weatherStatus: weatherDataJSON.days[i].description,
       tempMin: weatherDataJSON.days[i].tempmin,
       tempMax: weatherDataJSON.days[i].tempmax,
+      dateTime: weatherDataJSON.days[i].datetime,
     };
 
     days.push(day);
@@ -33,7 +34,7 @@ async function processData() {
   return processedData;
 }
 
-async function renderTopDiv() {
+async function createPageHeader() {
   const data = await processData();
   const topDiv = document.createElement("div");
   topDiv.classList.add("top-div");
@@ -75,7 +76,50 @@ async function renderTopDiv() {
   topDiv.appendChild(currentTempDiv);
   topDiv.appendChild(minMaxTempDiv);
 
-  document.body.appendChild(topDiv);
+  return topDiv;
 }
 
-renderTopDiv();
+async function createMainContent() {
+  const data = await processData();
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  const mainContent = document.createElement("div");
+  mainContent.classList.add("main-content");
+
+  for (let i = 0; i < data.sevenDays.length; i++) {
+    const date = new Date(data.sevenDays[i].dateTime);
+
+    const row = document.createElement("div");
+
+    const dayOfWeek = document.createElement("div");
+    dayOfWeek.textContent = days[date.getDay()];
+
+    const weatherStatus = document.createElement("div");
+    weatherStatus.textContent = data.sevenDays[i].weatherStatus;
+
+    row.appendChild(dayOfWeek);
+    row.appendChild(weatherStatus);
+
+    mainContent.appendChild(row);
+  }
+
+  return mainContent;
+}
+
+async function renderPage() {
+  const topDiv = await createPageHeader();
+  const mainContent = await createMainContent();
+
+  document.body.appendChild(topDiv);
+  document.body.appendChild(mainContent);
+}
+
+renderPage();
