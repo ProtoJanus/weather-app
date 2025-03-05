@@ -5,9 +5,12 @@
 }
 
 body {
-  padding-top: 30px;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
+  background-color: rgb(40, 44, 88);
+  color: white;
 
   .page-header {
     width: 100%;
@@ -25,14 +28,92 @@ body {
       justify-content: center;
       gap: 5px;
 
-      button {
-        /* replace text with magnifying glass icon */
+      input {
+        border-radius: 3px;
+        border: none;
       }
+
+      button {
+        padding: 3px 5px;
+        border: none;
+        border-radius: 2px;
+        background-color: #473694;
+        color: white;
+      }
+    }
+
+    .toggle-temperature {
+      padding: 3px 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #473694;
+      color: white;
+    }
+
+    .location-div {
+      font-size: 30px;
+    }
+
+    .current-temp-div {
+      font-size: 30px;
     }
 
     .min-max-temp-div {
       display: flex;
       gap: 7px;
+    }
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+
+    .main-content-header {
+      font-size: 25px;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      background-color: rgb(61, 45, 131);
+      width: 80%;
+      border-radius: 10px;
+      padding: 5px 10px;
+
+      .day-of-week {
+        font-weight: 700;
+        font-size: 15px;
+      }
+
+      .weather-status {
+        max-width: 70%;
+      }
+
+      .temp-range {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+}
+
+@media (min-width: 551px) {
+  body {
+    .main-content {
+      gap: 30px;
+
+      .row {
+        width: 60%;
+        gap: 10px;
+
+        .day-of-week {
+          font-size: 30px;
+        }
+      }
     }
   }
 }

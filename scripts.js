@@ -1,6 +1,10 @@
+let isCelsius = false;
+let firstRun = true;
+let url =
+  "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Houston?key=4XZ4WAEYDVM5PYXMJF8YVQXLP";
+
 async function getData() {
-  const url =
-    "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/houston?key=4XZ4WAEYDVM5PYXMJF8YVQXLP";
+  const currentURL = url;
   try {
     const response = await fetch(url);
     const json = await response.json();
@@ -17,10 +21,19 @@ async function processData() {
 
   for (let i = 0; i < 7; i++) {
     let day = {
-      temp: weatherDataJSON.days[i].temp,
+      tempF: weatherDataJSON.days[i].temp,
+      tempC: parseFloat(
+        (((weatherDataJSON.days[i].temp - 32) * 5) / 9).toFixed(1)
+      ),
       weatherStatus: weatherDataJSON.days[i].description,
-      tempMin: weatherDataJSON.days[i].tempmin,
-      tempMax: weatherDataJSON.days[i].tempmax,
+      tempMinF: weatherDataJSON.days[i].tempmin,
+      tempMinC: parseFloat(
+        (((weatherDataJSON.days[i].tempmin - 32) * 5) / 9).toFixed(1)
+      ),
+      tempMaxF: weatherDataJSON.days[i].tempmax,
+      tempMaxC: parseFloat(
+        (((weatherDataJSON.days[i].tempmax - 32) * 5) / 9).toFixed(1)
+      ),
       dateTime: weatherDataJSON.days[i].datetime,
     };
 
@@ -37,7 +50,7 @@ async function processData() {
 async function createPageHeader() {
   const data = await processData();
   const topDiv = document.createElement("div");
-  topDiv.classList.add("top-div");
+  topDiv.classList.add("page-header");
 
   const searchBar = document.createElement("div");
   searchBar.classList.add("search-bar");
@@ -45,9 +58,22 @@ async function createPageHeader() {
 
   const button = document.createElement("button");
   button.textContent = "Search";
+  button.addEventListener("click", (e) => {
+    url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${input.value}?key=4XZ4WAEYDVM5PYXMJF8YVQXLP`;
+    renderPage();
+  });
 
   searchBar.appendChild(input);
   searchBar.appendChild(button);
+
+  const toggleTemp = document.createElement("button");
+  toggleTemp.textContent = "Toggle Temperature";
+  toggleTemp.classList.add("toggle-temperature");
+
+  toggleTemp.addEventListener("click", () => {
+    isCelsius = !isCelsius;
+    renderPage();
+  });
 
   const locationDiv = document.createElement("div");
   locationDiv.classList.add("location-div");
@@ -55,23 +81,31 @@ async function createPageHeader() {
 
   const currentTempDiv = document.createElement("div");
   currentTempDiv.classList.add("current-temp-div");
-  currentTempDiv.textContent = data.sevenDays[0].temp;
 
   const minMaxTempDiv = document.createElement("div");
   minMaxTempDiv.classList.add("min-max-temp-div");
 
   const tempMaxDiv = document.createElement("div");
   tempMaxDiv.classList.add("temp-max-div");
-  tempMaxDiv.textContent = `H: ${data.sevenDays[0].tempMax}`;
 
   const tempMinDiv = document.createElement("div");
   tempMinDiv.classList.add("temp-min-div");
-  tempMinDiv.textContent = `L: ${data.sevenDays[0].tempMin}`;
+
+  if (isCelsius) {
+    currentTempDiv.textContent = `${data.sevenDays[0].tempC}C`;
+    tempMaxDiv.textContent = `H: ${data.sevenDays[0].tempMaxC}C`;
+    tempMinDiv.textContent = `L: ${data.sevenDays[0].tempMinC}C`;
+  } else {
+    currentTempDiv.textContent = `${data.sevenDays[0].tempF}F`;
+    tempMaxDiv.textContent = `H: ${data.sevenDays[0].tempMaxF}F`;
+    tempMinDiv.textContent = `L: ${data.sevenDays[0].tempMinF}F`;
+  }
 
   minMaxTempDiv.appendChild(tempMaxDiv);
   minMaxTempDiv.appendChild(tempMinDiv);
 
   topDiv.appendChild(searchBar);
+  topDiv.appendChild(toggleTemp);
   topDiv.appendChild(locationDiv);
   topDiv.appendChild(currentTempDiv);
   topDiv.appendChild(minMaxTempDiv);
@@ -94,19 +128,48 @@ async function createMainContent() {
   const mainContent = document.createElement("div");
   mainContent.classList.add("main-content");
 
+  const mainContentHeader = document.createElement("div");
+  mainContentHeader.classList.add("main-content-header");
+  mainContentHeader.textContent = "7 Day Outlook";
+
+  mainContent.appendChild(mainContentHeader);
+
   for (let i = 0; i < data.sevenDays.length; i++) {
     const date = new Date(data.sevenDays[i].dateTime);
 
     const row = document.createElement("div");
+    row.classList.add("row");
 
     const dayOfWeek = document.createElement("div");
+    dayOfWeek.classList.add("day-of-week");
     dayOfWeek.textContent = days[date.getDay()];
 
     const weatherStatus = document.createElement("div");
     weatherStatus.textContent = data.sevenDays[i].weatherStatus;
+    weatherStatus.classList.add("weather-status");
+
+    const tempRange = document.createElement("div");
+    tempRange.classList.add("temp-range");
+
+    const tempMin = document.createElement("div");
+    tempMin.classList.add("temp-min");
+    const tempMax = document.createElement("div");
+    tempMax.classList.add("temp-max");
+
+    if (isCelsius) {
+      tempMin.textContent = `L: ${data.sevenDays[i].tempMinC}C`;
+      tempMax.textContent = `H: ${data.sevenDays[i].tempMaxC}C`;
+    } else {
+      tempMin.textContent = `L: ${data.sevenDays[i].tempMinF}F`;
+      tempMax.textContent = `H: ${data.sevenDays[i].tempMaxF}F`;
+    }
+
+    tempRange.appendChild(tempMin);
+    tempRange.appendChild(tempMax);
 
     row.appendChild(dayOfWeek);
     row.appendChild(weatherStatus);
+    row.appendChild(tempRange);
 
     mainContent.appendChild(row);
   }
@@ -115,6 +178,7 @@ async function createMainContent() {
 }
 
 async function renderPage() {
+  document.body.innerHTML = "";
   const topDiv = await createPageHeader();
   const mainContent = await createMainContent();
 
